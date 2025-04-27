@@ -1,3 +1,5 @@
+Questo workshop è stato sviluppato da Yuri Paglierani, Alessio Valentinis e Giulio Fantuzzi
+
 # Workshop ConnectiHome - Analisi Recensioni
 
 ## Panoramica
