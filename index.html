@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop ConnectiHome - Analisi Recensioni</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tsparticles/2.12.0/tsparticles.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0ea5e9;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #0ea5e9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        #app-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f1f5f9;
+            color: var(--dark);
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.92), rgba(14, 165, 233, 0.92));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            z-index: -1;
+            animation: pulse 8s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1) rotate(30deg); opacity: 0.6; }
+            100% { transform: scale(1.1) rotate(30deg); opacity: 0.8; }
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.15);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+        
+        .card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -3px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary);
+            animation: expandWidth 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes expandWidth {
+            from { width: 50px; }
+            to { width: 150px; }
+        }
+        
+        .notebook-card {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+        
+        .notebook-card:hover {
+            border-left-width: 8px;
+            background-color: white;
+        }
+        
+        .notebook-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+        
+        .notebook-card p {
+            margin-bottom: 1rem;
+            color: #64748b;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px -1px rgba(37, 99, 235, 0.4);
+            max-width: fit-content;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px -2px rgba(37, 99, 235, 0.5);
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background-color: rgba(238, 242, 255, 0.9);
+            border-radius: 8px;
+            border-left: 4px solid var(--warning);
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-container:hover {
+            background-color: rgba(238, 242, 255, 1);
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .badge::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .badge:hover::after {
+            opacity: 1;
+        }
+        
+        .badge-primary {
+            background-color: #dbeafe;
+            color: var(--primary-dark);
+        }
+        
+        .badge-secondary {
+            background-color: #e0f2fe;
+            color: var(--secondary);
+        }
+        
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            background-color: rgba(30, 41, 59, 0.95);
+            color: var(--light);
+            margin-top: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hint {
+            background-color: rgba(236, 253, 245, 0.9);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .hint:hover {
+            background-color: rgba(236, 253, 245, 1);
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hint p {
+            color: #065f46;
+        }
+        
+        /* Glow effect on hover */
+        .glow-on-hover {
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .glow-on-hover:hover {
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+        }
+        
+        /* Floating animation for cards */
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; overflow-x: hidden; width: 100%; height: 100%;">
+    <div id="app-container" style="width: 100vw; min-height: 100vh; overflow-x: hidden;">
+        <div id="particles-js"></div>
+        <div class="content-wrapper">
+            <header class="header">
+                <h1>Workshop ConnectiHome</h1>
+                <p>Analisi avanzata delle recensioni con Data Science e AI</p>
+            </header>
+            
+            <div class="container">
+                <div class="card float-animation">
+                    <h2 class="section-title">Benvenuti al Workshop</h2>
+                    <p>Questo workshop esplora come le moderne tecniche di Data Science e Intelligenza Artificiale possono essere utilizzate per analizzare recensioni di clienti e trarne insight significativi.</p>
+                    <p>I notebook Jupyter forniti ti guideranno attraverso l'analisi completa, dalla preparazione dei dati all'interpretazione dei risultati.</p>
+                    
+                    <div class="badges" style="margin-top: 1rem;">
+                        <span class="badge badge-primary glow-on-hover">Data Science</span>
+                        <span class="badge badge-secondary glow-on-hover">AI</span>
+                        <span class="badge badge-primary glow-on-hover">NLP</span>
+                        <span class="badge badge-secondary glow-on-hover">Clustering</span>
+                        <span class="badge badge-primary glow-on-hover">Sentiment Analysis</span>
+                        <span class="badge badge-secondary glow-on-hover">Visualizzazione</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="section-title">Materiale del Workshop</h2>
+                    
+                    <div class="notebook-card glow-on-hover">
+                        <h3><i class="fas fa-book"></i> Notebook 1: Analisi delle Recensioni</h3>
+                        <p>Questo notebook introduttivo ti guiderà attraverso il processo di preparazione dei dati, embedding del testo, classificazione del sentiment e clustering per identificare gruppi tematici nelle recensioni dei clienti.</p>
+                        <div class="badges">
+                            <span class="badge badge-primary">Preparazione Dati</span>
+                            <span class="badge badge-secondary">Embedding</span>
+                            <span class="badge badge-primary">Sentiment Analysis</span>
+                            <span class="badge badge-secondary">Clustering</span>
+                        </div>
+                        <a href="https://colab.research.google.com/drive/1V4mU70GeJDggswGszFWyLnzW7Hx53pc_" class="btn" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> Apri Notebook 1
+                        </a>
+                    </div>
+            
+            <div class="toggle-container">
+                <button id="unlockBtn" class="btn" style="background-color: var(--warning); margin: 0;">
+                    <i class="fas fa-lock"></i> Sblocca Soluzioni
+                </button>
+                <span class="toggle-label" style="margin-left: 1rem;">Area riservata al docente</span>
+            </div>
+            
+            <!-- Il modal della password - inizialmente nascosto -->
+            <div id="passwordModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+                <div style="background-color: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">Accesso Riservato</h3>
+                    <p style="margin-bottom: 1.5rem; color: #64748b;">Inserisci la password per sbloccare l'accesso alle soluzioni:</p>
+                    <input type="password" id="passwordInput" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 1rem;">
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button id="cancelBtn" class="btn" style="background-color: #94a3b8; margin: 0;">Annulla</button>
+                        <button id="submitBtn" class="btn" style="margin: 0;">Conferma</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sezione delle soluzioni - inizialmente nascosta -->
+            <div id="solutionSection" class="notebook-card hidden" style="display: none;">
+                <h3><i class="fas fa-lightbulb"></i> Notebook 2: Risultati e Considerazioni Finali</h3>
+                <p>Questo notebook mostra i risultati dell'analisi, confronta la classificazione del sentiment con il ground truth e fornisce visualizzazioni avanzate per interpretare i cluster identificati.</p>
+                <div class="badges">
+                    <span class="badge badge-warning">Soluzioni</span>
+                    <span class="badge badge-primary">Risultati</span>
+                    <span class="badge badge-secondary">Visualizzazioni Avanzate</span>
+                    <span class="badge badge-primary">Interpretazione</span>
+                </div>
+                <a href="https://colab.research.google.com/drive/1-r1bHpu-SKpo8tsyRl3OTLBjh7FTxs6p" class="btn" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Apri Notebook Soluzioni
+                </a>
+                
+                <div class="hint">
+                    <p><i class="fas fa-info-circle"></i> <strong>Suggerimento:</strong> Ti consigliamo di provare prima a completare le analisi in modo indipendente prima di consultare le soluzioni.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Workshop ConnectiHome - Analisi Recensioni</p>
+    </footer>
+    
+    <script>
+        // Inizializzazione delle particelle
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inizializza le particelle dello sfondo
+            tsParticles.load("particles-js", {
+                fpsLimit: 60,
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: ["#2563eb", "#0ea5e9", "#10b981", "#f59e0b"]
+                    },
+                    shape: {
+                        type: ["circle", "triangle", "polygon"],
+                        polygon: {
+                            sides: 6
+                        }
+                    },
+                    opacity: {
+                        value: 0.6,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 4,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 2,
+                            size_min: 0.3,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#2563eb",
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                        attract: {
+                            enable: true,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "grab"
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: "push"
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 0.5
+                            }
+                        },
+                        push: {
+                            particles_nb: 3
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+            
+            // Gestione dell'accesso alle soluzioni
+            const solutionSection = document.getElementById('solutionSection');
+            const unlockBtn = document.getElementById('unlockBtn');
+            const passwordModal = document.getElementById('passwordModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const submitBtn = document.getElementById('submitBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            
+            // La password per sbloccare le soluzioni - CAMBIA QUESTA PASSWORD!
+            const correctPassword = "workshop2025";
+            
+            // Utilizziamo una variabile invece di localStorage (che non funziona in sandbox)
+            let solutionsUnlocked = false;
+            
+            // Assicurati che la sezione soluzioni sia nascosta all'inizio
+            solutionSection.style.display = "none";
+            
+            // Mostra il modal per la password SOLO quando si clicca sul pulsante
+            unlockBtn.addEventListener('click', function() {
+                // Se le soluzioni sono già sbloccate, bloccale di nuovo
+                if (solutionsUnlocked) {
+                    solutionsUnlocked = false;
+                    solutionSection.style.display = "none";
+                    unlockBtn.innerHTML = '<i class="fas fa-lock"></i> Sblocca Soluzioni';
+                    unlockBtn.style.backgroundColor = 'var(--warning)';
+                    return;
+                }
+                
+                // Altrimenti mostra il modal di inserimento password
+                passwordModal.style.display = "flex";
+                passwordInput.focus();
+                passwordInput.value = ''; // Pulisci il campo password
+                passwordInput.style.borderColor = '#cbd5e1'; // Ripristina lo stile normale
+                passwordInput.style.backgroundColor = 'white';
+            });
+            
+            // Chiudi il modal senza fare niente
+            cancelBtn.addEventListener('click', function() {
+                passwordModal.style.display = "none";
+                passwordInput.value = '';
+            });
+            
+            // Verifica la password
+            submitBtn.addEventListener('click', function() {
+                checkPassword();
+            });
+            
+            // Permetti l'invio con il tasto Enter
+            passwordInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+            
+            function checkPassword() {
+                const enteredPassword = passwordInput.value;
+                
+                if (enteredPassword === correctPassword) {
+                    // Password corretta
+                    solutionSection.style.display = "block";
+                    passwordModal.style.display = "none";
+                    passwordInput.value = '';
+                    
+                    // Aggiorna lo stato sbloccato
+                    solutionsUnlocked = true;
+                    
+                    // Cambia l'aspetto del pulsante
+                    unlockBtn.innerHTML = '<i class="fas fa-lock-open"></i> Soluzioni Sbloccate';
+                    unlockBtn.style.backgroundColor = 'var(--success)';
+                    
+                    // Effetto di celebrazione con particelle
+                    tsParticles.load("particles-js", {
+                        fpsLimit: 60,
+                        particles: {
+                            number: {
+                                value: 100,
+                                density: {
+                                    enable: true,
+                                    value_area: 800
+                                }
+                            },
+                            color: {
+                                value: ["#10b981", "#34d399", "#6ee7b7", "#a7f3d0"]
+                            },
+                            shape: {
+                                type: "circle"
+                            },
+                            opacity: {
+                                value: 0.8,
+                                random: true
+                            },
+                            size: {
+                                value: 5,
+                                random: true
+                            },
+                            move: {
+                                enable: true,
+                                speed: 5,
+                                direction: "top",
+                                random: true,
+                                straight: false,
+                                out_mode: "out",
+                                bounce: false
+                            }
+                        },
+                        interactivity: {
+                            detect_on: "canvas",
+                            events: {
+                                onhover: {
+                                    enable: true,
+                                    mode: "repulse"
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Ripristina le particelle normali dopo 2 secondi
+                    setTimeout(function() {
+                        tsParticles.load("particles-js", {
+                            fpsLimit: 60,
+                            particles: {
+                                number: {
+                                    value: 80,
+                                    density: {
+                                        enable: true,
+                                        value_area: 800
+                                    }
+                                },
+                                color: {
+                                    value: ["#2563eb", "#0ea5e9", "#10b981", "#f59e0b"]
+                                },
+                                shape: {
+                                    type: ["circle", "triangle", "polygon"],
+                                    polygon: {
+                                        sides: 6
+                                    }
+                                },
+                                opacity: {
+                                    value: 0.6,
+                                    random: true,
+                                    anim: {
+                                        enable: true,
+                                        speed: 1,
+                                        opacity_min: 0.1,
+                                        sync: false
+                                    }
+                                },
+                                size: {
+                                    value: 4,
+                                    random: true,
+                                    anim: {
+                                        enable: true,
+                                        speed: 2,
+                                        size_min: 0.3,
+                                        sync: false
+                                    }
+                                },
+                                line_linked: {
+                                    enable: true,
+                                    distance: 150,
+                                    color: "#2563eb",
+                                    opacity: 0.2,
+                                    width: 1
+                                },
+                                move: {
+                                    enable: true,
+                                    speed: 2,
+                                    direction: "none",
+                                    random: true,
+                                    straight: false,
+                                    out_mode: "out",
+                                    bounce: false,
+                                    attract: {
+                                        enable: true,
+                                        rotateX: 600,
+                                        rotateY: 1200
+                                    }
+                                }
+                            },
+                            interactivity: {
+                                detect_on: "canvas",
+                                events: {
+                                    onhover: {
+                                        enable: true,
+                                        mode: "grab"
+                                    },
+                                    onclick: {
+                                        enable: true,
+                                        mode: "push"
+                                    },
+                                    resize: true
+                                },
+                                modes: {
+                                    grab: {
+                                        distance: 140,
+                                        line_linked: {
+                                            opacity: 0.5
+                                        }
+                                    },
+                                    push: {
+                                        particles_nb: 3
+                                    }
+                                }
+                            },
+                            retina_detect: true
+                        });
+                    }, 2000);
+                } else {
+                    // Password errata - aggiungi classe di errore all'input
+                    passwordInput.style.borderColor = '#ef4444';
+                    passwordInput.style.backgroundColor = '#fee2e2';
+                    
+                    // Fai tremare leggermente il campo input (effetto di errore)
+                    passwordInput.classList.add('shake');
+                    setTimeout(function() {
+                        passwordInput.classList.remove('shake');
+                    }, 500);
+                    
+                    // Effetto di errore con particelle rosse
+                    tsParticles.load("particles-js", {
+                        fpsLimit: 60,
+                        particles: {
+                            number: {
+                                value: 40,
+                                density: {
+                                    enable: true,
+                                    value_area: 800
+                                }
+                            },
+                            color: {
+                                value: ["#ef4444", "#f87171", "#fca5a5"]
+                            },
+                            shape: {
+                                type: "circle"
+                            },
+                            opacity: {
+                                value: 0.8,
+                                random: false
+                            },
+                            size: {
+                                value: 5,
+                                random: true
+                            },
+                            move: {
+                                enable: true,
+                                speed: 6,
+                                direction: "none",
+                                random: true,
+                                straight: false,
+                                out_mode: "out",
+                                bounce: false
+                            }
+                        },
+                        interactivity: {
+                            detect_on: "canvas",
+                            events: {
+                                onhover: {
+                                    enable: true,
+                                    mode: "repulse"
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Ripristina le particelle normali dopo 1 secondo
+                    setTimeout(function() {
+                        tsParticles.load("particles-js", {
+                            fpsLimit: 60,
+                            particles: {
+                                number: {
+                                    value: 80,
+                                    density: {
+                                        enable: true,
+                                        value_area: 800
+                                    }
+                                },
+                                color: {
+                                    value: ["#2563eb", "#0ea5e9", "#10b981", "#f59e0b"]
+                                },
+                                shape: {
+                                    type: ["circle", "triangle", "polygon"],
+                                    polygon: {
+                                        sides: 6
+                                    }
+                                },
+                                opacity: {
+                                    value: 0.6,
+                                    random: true,
+                                    anim: {
+                                        enable: true,
+                                        speed: 1,
+                                        opacity_min: 0.1,
+                                        sync: false
+                                    }
+                                },
+                                size: {
+                                    value: 4,
+                                    random: true,
+                                    anim: {
+                                        enable: true,
+                                        speed: 2,
+                                        size_min: 0.3,
+                                        sync: false
+                                    }
+                                },
+                                line_linked: {
+                                    enable: true,
+                                    distance: 150,
+                                    color: "#2563eb",
+                                    opacity: 0.2,
+                                    width: 1
+                                },
+                                move: {
+                                    enable: true,
+                                    speed: 2,
+                                    direction: "none",
+                                    random: true,
+                                    straight: false,
+                                    out_mode: "out",
+                                    bounce: false,
+                                    attract: {
+                                        enable: true,
+                                        rotateX: 600,
+                                        rotateY: 1200
+                                    }
+                                }
+                            },
+                            interactivity: {
+                                detect_on: "canvas",
+                                events: {
+                                    onhover: {
+                                        enable: true,
+                                        mode: "grab"
+                                    },
+                                    onclick: {
+                                        enable: true,
+                                        mode: "push"
+                                    },
+                                    resize: true
+                                },
+                                modes: {
+                                    grab: {
+                                        distance: 140,
+                                        line_linked: {
+                                            opacity: 0.5
+                                        }
+                                    },
+                                    push: {
+                                        particles_nb: 3
+                                    }
+                                }
+                            },
+                            retina_detect: true
+                        });
+                    }, 1000);
+                }
+            }
+            
+            // Aggiungi l'animazione di scuotimento per l'errore di password
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+                .shake {
+                    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Assicurati che il modal sia nascosto all'inizio
+            passwordModal.style.display = "none";
+        });
+    </script>
+</body>
+</html>
