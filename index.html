@@ -307,6 +307,11 @@
             color: #92400e;
         }
         
+        .badge-info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
         footer {
             text-align: center;
             padding: 2rem 0;
@@ -450,6 +455,26 @@
                     <p><i class="fas fa-info-circle"></i> <strong>Suggerimento:</strong> Ti consigliamo di provare prima a completare le analisi in modo indipendente prima di consultare le soluzioni.</p>
                 </div>
             </div>
+            
+            <!-- NUOVA SEZIONE: Dataset Generator - inizialmente nascosta -->
+            <div id="datasetGenSection" class="notebook-card hidden" style="display: none; border-left-color: var(--info);">
+                <h3><i class="fas fa-database"></i> Notebook Extra: Generazione del Dataset</h3>
+                <p>Questo notebook avanzato illustra il processo di generazione sintetica del dataset di recensioni utilizzando tecniche di prompt engineering e modelli linguistici. Scopri come sono state create le 100.000 recensioni simulate con distribuzioni realistiche di sentiment e topics.</p>
+                <div class="badges">
+                    <span class="badge badge-info">Materiale Extra</span>
+                    <span class="badge badge-primary">Generazione Dati</span>
+                    <span class="badge badge-secondary">LLM</span>
+                    <span class="badge badge-primary">Prompt Engineering</span>
+                    <span class="badge badge-secondary">Data Simulation</span>
+                </div>
+                <a href="https://colab.research.google.com/drive/1pf3ThPp-hjcLtyiGFQjZTqmclOeumVz_" class="btn" target="_blank" style="background-color: var(--info);">
+                    <i class="fas fa-external-link-alt"></i> Apri Notebook Generazione
+                </a>
+                
+                <div class="hint" style="background-color: rgba(236, 248, 255, 0.9); border-left-color: var(--info);">
+                    <p style="color: #0c4a6e;"><i class="fas fa-info-circle"></i> <strong>Nota:</strong> Questo notebook mostra il processo tecnico di creazione del dataset utilizzato nel workshop, ideale per chi è interessato ad approfondire tecniche di generazione dati con AI.</p>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -552,6 +577,7 @@
             
             // Gestione dell'accesso alle soluzioni
             const solutionSection = document.getElementById('solutionSection');
+            const datasetGenSection = document.getElementById('datasetGenSection');
             const unlockBtn = document.getElementById('unlockBtn');
             const passwordModal = document.getElementById('passwordModal');
             const passwordInput = document.getElementById('passwordInput');
@@ -566,6 +592,7 @@
             
             // Assicurati che la sezione soluzioni sia nascosta all'inizio
             solutionSection.style.display = "none";
+            datasetGenSection.style.display = "none";
             
             // Mostra il modal per la password SOLO quando si clicca sul pulsante
             unlockBtn.addEventListener('click', function() {
@@ -573,6 +600,7 @@
                 if (solutionsUnlocked) {
                     solutionsUnlocked = false;
                     solutionSection.style.display = "none";
+                    datasetGenSection.style.display = "none";
                     unlockBtn.innerHTML = '<i class="fas fa-lock"></i> Sblocca Soluzioni';
                     unlockBtn.style.backgroundColor = 'var(--warning)';
                     return;
@@ -610,6 +638,7 @@
                 if (enteredPassword === correctPassword) {
                     // Password corretta
                     solutionSection.style.display = "block";
+                    datasetGenSection.style.display = "block";
                     passwordModal.style.display = "none";
                     passwordInput.value = '';
                     
